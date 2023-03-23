@@ -42,6 +42,36 @@ FROM customer_order_cte
 WHERE rank = 1;
 
 -- 4. What is the most purchased item on the menu and how many times was it purchased by all customers?
+
+SELECT 
+	m.product_name,
+    t.count
+FROM 
+	(SELECT 
+       s.product_id,
+       COUNT(s.order_date) as count
+     FROM 
+     	dannys_diner.sales as s
+     GROUP BY 
+     	product_id
+     ORDER BY 
+     	count DESC
+     LIMIT 1) AS t
+INNER JOIN dannys_diner.menu as m
+ON t.product_id = m.product_id;
+
+-- OR
+
+SELECT
+	m.product_name,
+    MAX(COUNT(s.order_date)) AS count
+FROM menu as m
+INNER JOIN sales as s
+ON m.product_id = s.product_id
+GROUP BY m.product_name, s.product_id
+ORDER BY count DESC
+LIMIT 1;
+
 -- 5. Which item was the most popular for each customer?
 -- 6. Which item was purchased first by the customer after they became a member?
 -- 7. Which item was purchased just before the customer became a member?
