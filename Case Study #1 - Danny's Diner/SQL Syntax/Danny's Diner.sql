@@ -123,6 +123,37 @@ WHERE
 ;
 
 -- 7. Which item was purchased just before the customer became a member?
+
+WITH order_befort_join AS (
+    SELECT
+        s.customer_id,
+        men.product_name,
+        s.order_date,
+        RANK() OVER(
+            PARTITION BY s.customer_id
+            ORDER BY
+                s.order_date DESC
+        ) AS rank
+    FROM
+        dannys_diner.sales AS s
+        INNER JOIN dannys_diner.menu AS men ON s.product_id = men.product_id
+        INNER JOIN dannys_diner.members AS mem ON s.customer_id = mem.customer_id
+    WHERE
+        s.order_date <= mem.join_date
+    GROUP BY
+        s.customer_id,
+        men.product_name,
+        s.order_date
+)
+SELECT
+    cte.customer_id,
+    cte.product_name
+FROM
+    order_befort_join AS cte
+WHERE
+    rank = 1
+;
+
 -- 8. What is the total items and amount spent for each member before they became a member?
 -- 9.  If each $1 spent equates to 10 points and sushi has a 2x points multiplier - how many points would each customer have?
 -- 10. In the first week after a customer joins the program (including their join date) they earn 2x points on all items, not just sushi - how many points do customer A and B have at the end of January?
