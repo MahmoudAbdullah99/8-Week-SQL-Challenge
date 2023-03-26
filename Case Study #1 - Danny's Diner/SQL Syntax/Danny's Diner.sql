@@ -94,6 +94,34 @@ WHERE rank = 1
 ;
 
 -- 6. Which item was purchased first by the customer after they became a member?
+
+WITH customer_after_join AS (
+    SELECT 
+        s.customer_id,
+        men.product_name,
+        RANK() OVER(PARTITION BY s.customer_id ORDER BY COUNT(men.product_name) DESC) AS rank
+    FROM 
+      dbo.sales AS s
+    INNER JOIN dbo.members AS mem
+      ON s.customer_id = mem.customer_id
+    INNER JOIN dbo.menu AS men
+      ON s.product_id = men.product_id
+    WHERE
+      s.order_date > mem.join_date
+    GROUP BY
+      s.customer_id,
+      men.product_name
+    )
+
+SELECT 
+  cte.customer_id,
+    cte.product_name
+FROM
+  customer_after_join AS cte
+WHERE
+  cte.rank = 1
+;
+
 -- 7. Which item was purchased just before the customer became a member?
 -- 8. What is the total items and amount spent for each member before they became a member?
 -- 9.  If each $1 spent equates to 10 points and sushi has a 2x points multiplier - how many points would each customer have?
