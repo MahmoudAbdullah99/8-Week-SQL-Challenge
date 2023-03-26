@@ -25,14 +25,14 @@ ORDER BY customer_id;
 -- 3. What was the first item from the menu purchased by each customer?
 
 WITH customer_order_cte AS (
-  SELECT
-      s.customer_id,
-      s.product_id,
-      m.product_name,
-      ROW_NUMBER() OVER (PARTITION BY s.customer_id ORDER BY s.order_date) as rank
-  FROM dannys_diner.sales as s
-  INNER JOIN dannys_diner.menu as m
-  ON s.product_id = m.product_id
+	SELECT
+		s.customer_id,
+		s.product_id,
+    	m.product_name,
+		ROW_NUMBER() OVER (PARTITION BY s.customer_id ORDER BY s.order_date) as rank
+	FROM dannys_diner.sales as s
+	INNER JOIN dannys_diner.menu as m
+	ON s.product_id = m.product_id
 )
 
 SELECT
@@ -44,13 +44,13 @@ WHERE rank = 1;
 -- 4. What is the most purchased item on the menu and how many times was it purchased by all customers?
 
 SELECT 
-	m.product_name,
+m.product_name,
     t.count
 FROM 
 	(SELECT 
        s.product_id,
        COUNT(s.order_date) as count
-     FROM 
+     FROM
      	dannys_diner.sales as s
      GROUP BY 
      	product_id
@@ -73,6 +73,26 @@ ORDER BY count DESC
 LIMIT 1;
 
 -- 5. Which item was the most popular for each customer?
+
+WITH count_customer_product_cte AS (
+    SELECT
+            s.customer_id,
+            m.product_name,
+            RANK() OVER (PARTITION BY s.customer_id ORDER BY COUNT(s.product_id) DESC) AS rank
+    FROM dannys_diner.sales AS s
+    INNER JOIN dannys_diner.menu AS m
+    ON s.product_id = m.product_id
+    GROUP BY 
+        s.customer_id,
+        m.product_name)
+
+SELECT 
+	cte.customer_id,
+	cte.product_name
+FROM count_customer_product_cte as cte
+WHERE rank = 1
+;
+
 -- 6. Which item was purchased first by the customer after they became a member?
 -- 7. Which item was purchased just before the customer became a member?
 -- 8. What is the total items and amount spent for each member before they became a member?
