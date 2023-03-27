@@ -168,17 +168,16 @@ WHERE
 -- 8. What is the total items and amount spent for each member before they became a member?
 SELECT
     s.customer_id,
-    men.product_name,
-    COUNT(*)
+    COUNT(s.product_id),
+    SUM(men.price)
 FROM
     dannys_diner.sales AS s
     INNER JOIN dannys_diner.members AS mem ON s.customer_id = mem.customer_id
     INNER JOIN dannys_diner.menu AS men ON s.product_id = men.product_id
 WHERE
-    s.order_date <= mem.join_date;
+    s.order_date <= mem.join_date
 GROUP BY
-    s.customer_id,
-    men.product_name;
+    s.customer_id;
 
 -- 9.  If each $1 spent equates to 10 points and sushi has a 2x points multiplier - how many points would each customer have?
 -- 10. In the first week after a customer joins the program (including their join date) they earn 2x points on all items, not just sushi - how many points do customer A and B have at the end of January?
