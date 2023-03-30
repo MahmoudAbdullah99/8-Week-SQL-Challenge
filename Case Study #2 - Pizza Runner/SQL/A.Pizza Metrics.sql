@@ -88,6 +88,11 @@ $ $;
 
 CALL clean_transform_data();
 
+-- show all tables
+SELECT * FROM customer_orders_temp;
+SELECT * FROM runner_orders_temp;
+SELECT * FROM pizza_runner.pizza_names;
+
 -- A. Pizza Metrics
 -- 1.How many pizzas were ordered?
 SELECT
@@ -111,3 +116,14 @@ GROUP BY
     rot.runner_id
 ORDER BY
     rot.runner_id;
+
+-- 4.How many of each type of pizza was delivered?
+SELECT
+    p.pizza_name,
+    COUNT(rot.distance)
+FROM
+    runner_orders_temp AS rot
+    INNER JOIN customer_orders_temp AS cot USING(order_id)
+    INNER JOIN pizza_runner.pizza_names AS p USING(pizza_id)
+GROUP BY
+    p.pizza_name
