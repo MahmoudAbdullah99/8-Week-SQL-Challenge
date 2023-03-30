@@ -86,3 +86,27 @@ END;
 $ $;
 
 CALL clean_transform_data();
+
+-- A. Pizza Metrics
+-- 1.How many pizzas were ordered?
+SELECT
+    COUNT(o.pizza_id) AS pizza_count
+FROM
+    customer_orders_temp AS o;
+
+-- 2.How many unique customer orders were made?
+SELECT
+    COUNT(DISTINCT o.order_id) AS unique_orders
+FROM
+    customer_orders_temp AS o;
+
+-- 3.How many successful orders were delivered by each runner?
+SELECT
+    rot.runner_id,
+    COUNT(distance) AS complete_orders
+FROM
+    runner_orders_temp AS rot
+GROUP BY
+    rot.runner_id
+ORDER BY
+    rot.runner_id;
