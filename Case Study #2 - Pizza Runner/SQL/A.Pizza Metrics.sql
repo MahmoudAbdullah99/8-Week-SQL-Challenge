@@ -127,3 +127,39 @@ FROM
     INNER JOIN pizza_runner.pizza_names AS p USING(pizza_id)
 GROUP BY
     p.pizza_name
+
+-- How many Vegetarian and Meatlovers were ordered by each customer?
+SELECT 
+    cot.customer_id,
+    p.pizza_name,
+    COUNT(cot.pizza_id) as pizza_count
+FROM
+    customer_orders_temp AS cot
+    INNER JOIN pizza_runner.pizza_names AS p 
+        ON cot.pizza_id = p.pizza_id
+GROUP BY
+    cot.customer_id,
+    p.pizza_name
+ORDER BY
+    cot.customer_id,
+    p.pizza_name;
+
+-- What was the maximum number of pizzas delivered in a single order?
+WITH delivered_pizzas_temp AS (
+    SELECT
+        cot.order_id,
+        COUNT(cot.pizza_id) As count
+    FROM
+        customer_orders_temp AS cot
+        INNER JOIN runner_orders_temp AS rot
+            ON cot.order_id = rot.order_id
+    WHERE
+        rot.distance IS NOT NULL
+    GROUP BY
+        cot.order_id
+)
+
+SELECT
+    MAX(t.count) AS max_pizza
+FROM
+    delivered_pizzas_temp AS t;
