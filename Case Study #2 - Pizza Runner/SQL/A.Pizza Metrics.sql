@@ -128,7 +128,7 @@ FROM
 GROUP BY
     p.pizza_name
 
--- How many Vegetarian and Meatlovers were ordered by each customer?
+-- 5.How many Vegetarian and Meatlovers were ordered by each customer?
 SELECT 
     cot.customer_id,
     p.pizza_name,
@@ -144,7 +144,7 @@ ORDER BY
     cot.customer_id,
     p.pizza_name;
 
--- What was the maximum number of pizzas delivered in a single order?
+-- 6.What was the maximum number of pizzas delivered in a single order?
 WITH delivered_pizzas_temp AS (
     SELECT
         cot.order_id,
@@ -163,3 +163,22 @@ SELECT
     MAX(t.count) AS max_pizza
 FROM
     delivered_pizzas_temp AS t;
+
+-- 7.For each customer, how many delivered pizzas had at least 1 change and how many had no changes?
+SELECT
+    cot.customer_id,
+    sum(CASE 
+        WHEN cot.exclusions != '' OR cot.extras != ''
+            THEN 1 
+        ELSE 0
+        END ) AS changed_pizza,
+    sum(CASE 
+        WHEN cot.exclusions = '' AND cot.extras = ''
+            THEN 1 
+        ELSE 0
+        END ) AS not_changed_pizza
+FROM customer_orders_temp AS cot
+INNER JOIN runner_orders_temp AS rot
+USING(order_id)
+WHERE rot.distance IS NOT NULL
+GROUP BY cot.customer_id;
