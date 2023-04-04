@@ -194,3 +194,14 @@ SELECT sum(
 FROM customer_orders_temp AS cot
     INNER JOIN runner_orders_temp AS rot USING(order_id)
 WHERE rot.distance IS NOT NULL;
+
+-- 9.What was the total volume of pizzas ordered for each hour of the day?
+SELECT 
+    extract(hour from order_time) AS hour,
+    COUNT(pizza_id)
+FROM
+    customer_orders_temp
+GROUP BY
+    hour
+ORDER BY
+    hour;
