@@ -182,3 +182,15 @@ INNER JOIN runner_orders_temp AS rot
 USING(order_id)
 WHERE rot.distance IS NOT NULL
 GROUP BY cot.customer_id;
+
+-- 8.How many pizzas were delivered that had both exclusions and extras?
+SELECT sum(
+        CASE
+            WHEN cot.exclusions != '' AND cot.extras != '' 
+                THEN 1
+            ELSE 0
+        END
+    ) AS extra_exclusions_pizza
+FROM customer_orders_temp AS cot
+    INNER JOIN runner_orders_temp AS rot USING(order_id)
+WHERE rot.distance IS NOT NULL;
