@@ -205,3 +205,14 @@ GROUP BY
     hour
 ORDER BY
     hour;
+
+-- 10.What was the volume of orders for each day of the week?
+SELECT
+    order_time :: DATE AS day,
+    COUNT(pizza_id)
+FROM
+    customer_orders_temp
+GROUP BY
+    day
+ORDER BY
+    day;
