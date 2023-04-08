@@ -30,29 +30,40 @@ ORDER BY rot.runner_id
 ;
 
 -- 3.Is there any relationship between the number of pizzas and how long the order takes to prepare?
-WITH average_time_cte AS (
+WITH average_time_cte AS (SELECT COUNT(cot.pizza_id)                                        AS pizza_count,
+                                 AVG(DATE_PART('MINUTE', rot.pickup_time - cot.order_time)) AS avg_prepararion_time
+                          FROM customer_orders_temp AS cot
+                                   INNER JOIN runner_orders_temp AS rot
+                                              ON cot.order_id = rot.order_id
+                          WHERE rot.cancellation IS NULL
+                          GROUP BY cot.order_id
+                          ORDER BY pizza_count)
+
+SELECT pizza_count,
+       ROUND(AVG(avg_prepararion_time)) AS average_per_count
+FROM average_time_cte
+GROUP BY pizza_count
+ORDER BY pizza_count
+;
+
+-- 4.What was the average distance travelled for each customer?
+WITH order_disance_cte AS (
 SELECT
-    COUNT(cot.pizza_id) AS pizza_count,
-    AVG(DATE_PART('MINUTE', rot.pickup_time - cot.order_time)) AS avg_prepararion_time
-FROM
-    customer_orders_temp AS cot
-        INNER JOIN runner_orders_temp AS rot
-                    ON cot.order_id = rot.order_id
-WHERE
-    rot.cancellation IS NULL
-GROUP BY
-    cot.order_id
-ORDER BY
-    pizza_count
+    DISTINCT rot.order_id,
+    rot.distance,
+    cot.customer_id
+FROM runner_orders_temp AS rot
+    INNER JOIN customer_orders_temp AS cot
+         ON cot.order_id = rot.order_id
 )
 
 SELECT
-    pizza_count,
-    ROUND(AVG(avg_prepararion_time)) AS average_per_count
+    cte.customer_id,
+    AVG(cte.distance) AS avg_distance
 FROM
-    average_time_cte
+    order_disance_cte AS cte
 GROUP BY
-    pizza_count
+    cte.customer_id
 ORDER BY
-    pizza_count
+    cte.customer_id
 ;
