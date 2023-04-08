@@ -79,15 +79,12 @@ ORDER BY runner_id,
 ;
 
 -- 7.What is the successful delivery percentage for each runner?
-SELECT
-    runner_id,
-    100 * AVG(CASE WHEN cancellation IS NULL
-            THEN 1
-        ELSE 0 END) AS success_percentage
-FROM
-    runner_orders_temp
-GROUP BY
-    runner_id
-ORDER BY
-    runner_id
+SELECT runner_id,
+       100 * AVG(CASE
+                     WHEN cancellation IS NULL
+                         THEN 1
+                     ELSE 0 END) AS success_percentage
+FROM runner_orders_temp
+GROUP BY runner_id
+ORDER BY runner_id
 ;
