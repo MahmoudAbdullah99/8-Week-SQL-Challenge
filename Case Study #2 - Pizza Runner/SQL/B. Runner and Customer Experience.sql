@@ -67,18 +67,27 @@ FROM runner_orders_temp
 ;
 
 -- 6.What was the average speed for each runner for each delivery and do you notice any trend for these values?
+SELECT runner_id,
+       order_id,
+       CONCAT(ROUND(CAST(60 * AVG(distance / duration) AS NUMERIC), 2), ' km/h') AS speed
+FROM runner_orders_temp
+WHERE cancellation IS NULL
+GROUP BY runner_id,
+         order_id
+ORDER BY runner_id,
+         order_id
+;
+
+-- 7.What is the successful delivery percentage for each runner?
 SELECT
     runner_id,
-    order_id,
-    CONCAT(ROUND(CAST(60*AVG(distance/duration) AS NUMERIC), 2), ' km/h') AS speed
+    100 * AVG(CASE WHEN cancellation IS NULL
+            THEN 1
+        ELSE 0 END) AS success_percentage
 FROM
     runner_orders_temp
-WHERE
-    cancellation IS NULL
 GROUP BY
-    runner_id,
-    order_id
+    runner_id
 ORDER BY
-    runner_id,
-    order_id
+    runner_id
 ;
