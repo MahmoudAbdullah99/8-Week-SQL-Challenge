@@ -62,8 +62,23 @@ ORDER BY cte.customer_id
 ;
 
 -- 5.What was the difference between the longest and shortest delivery times for all orders?
+SELECT (MAX(duration) - MIN(duration)) AS difference
+FROM runner_orders_temp
+;
+
+-- 6.What was the average speed for each runner for each delivery and do you notice any trend for these values?
 SELECT
-    (MAX(duration) - MIN(duration)) AS difference
+    runner_id,
+    order_id,
+    CONCAT(ROUND(CAST(60*AVG(distance/duration) AS NUMERIC), 2), ' km/h') AS speed
 FROM
     runner_orders_temp
+WHERE
+    cancellation IS NULL
+GROUP BY
+    runner_id,
+    order_id
+ORDER BY
+    runner_id,
+    order_id
 ;
