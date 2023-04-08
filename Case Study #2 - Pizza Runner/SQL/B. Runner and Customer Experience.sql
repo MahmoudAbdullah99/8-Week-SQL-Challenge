@@ -47,23 +47,23 @@ ORDER BY pizza_count
 ;
 
 -- 4.What was the average distance travelled for each customer?
-WITH order_disance_cte AS (
-SELECT
-    DISTINCT rot.order_id,
-    rot.distance,
-    cot.customer_id
-FROM runner_orders_temp AS rot
-    INNER JOIN customer_orders_temp AS cot
-         ON cot.order_id = rot.order_id
-)
+WITH order_disance_cte AS (SELECT DISTINCT rot.order_id,
+                                           rot.distance,
+                                           cot.customer_id
+                           FROM runner_orders_temp AS rot
+                                    INNER JOIN customer_orders_temp AS cot
+                                               ON cot.order_id = rot.order_id)
 
+SELECT cte.customer_id,
+       AVG(cte.distance) AS avg_distance
+FROM order_disance_cte AS cte
+GROUP BY cte.customer_id
+ORDER BY cte.customer_id
+;
+
+-- 5.What was the difference between the longest and shortest delivery times for all orders?
 SELECT
-    cte.customer_id,
-    AVG(cte.distance) AS avg_distance
+    (MAX(duration) - MIN(duration)) AS difference
 FROM
-    order_disance_cte AS cte
-GROUP BY
-    cte.customer_id
-ORDER BY
-    cte.customer_id
+    runner_orders_temp
 ;
