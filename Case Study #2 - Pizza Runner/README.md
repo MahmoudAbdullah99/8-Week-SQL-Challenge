@@ -138,16 +138,16 @@ Before you start writing your SQL queries however - you might want to investigat
 
 ### [A. Pizza Metrics](./SQL/A.Pizza%20Metrics.sql)
 
-[1.  How many pizzas were ordered?](./SQL/A.Pizza%20Metrics.sql#L97-L101)
-2.  How many unique customer orders were made?
-3.  How many successful orders were delivered by each runner?
-4.  How many of each type of pizza was delivered?
-5.  How many Vegetarian and Meatlovers were ordered by each customer?
-6.  What was the maximum number of pizzas delivered in a single order?
-7.  For each customer, how many delivered pizzas had at least 1 change and how many had no changes?
-8.  How many pizzas were delivered that had both exclusions and extras?
-9.  What was the total volume of pizzas ordered for each hour of the day?
-10. What was the volume of orders for each day of the week?
+1.  [How many pizzas were ordered?](./SQL/A.Pizza%20Metrics.sql#L97-L101)
+2.  [How many unique customer orders were made?](./SQL/A.Pizza%20Metrics.sql#L103-L107)
+3.  [How many successful orders were delivered by each runner?](./SQL/A.Pizza%20Metrics.sql#L109-L118)
+4.  [How many of each type of pizza was delivered?](./SQL/A.Pizza%20Metrics.sql#L120-L129)
+5.  [How many Vegetarian and Meatlovers were ordered by each customer?](./SQL/A.Pizza%20Metrics.sql#L131-L145)
+6.  [What was the maximum number of pizzas delivered in a single order?](./SQL/A.Pizza%20Metrics.sql#L147-L165)
+7.  [For each customer, how many delivered pizzas had at least 1 change and how many had no changes?](./SQL/A.Pizza%20Metrics.sql#L167-L184)
+8.  [How many pizzas were delivered that had both exclusions and extras?](./SQL/A.Pizza%20Metrics.sql#L168-L)
+9.  [What was the total volume of pizzas ordered for each hour of the day?](./SQL/A.Pizza%20Metrics.sql#L198-L207)
+10. [What was the volume of orders for each day of the week?](./SQL/A.Pizza%20Metrics.sql#L209-L218)
 
 ### B. Runner and Customer Experience
 
