@@ -16,6 +16,18 @@ SELECT *
 FROM pizza_runner.pizza_toppings;
 
 -- 1.What are the standard ingredients for each pizza?
+WITH toppings_uset_cte AS (SELECT pizza_id,
+                                  UNNEST(STRING_TO_ARRAY(rec.toppings, ', ')) AS topping_id
+                           FROM pizza_runner.pizza_recipes AS rec)
+
+SELECT cte.pizza_id,
+       ARRAY_TO_STRING(ARRAY_AGG(distinct top.topping_name), ', ') AS ingredients
+FROM toppings_uset_cte AS cte
+         INNER JOIN pizza_runner.pizza_toppings AS top
+                    ON cte.topping_id::INT = top.topping_id
+GROUP BY cte.pizza_id
+;
+
 -- 2.What was the most commonly added extra?
 -- 3.What was the most common exclusion?
 -- 4.Generate an order item for each record in the customers_orders table in the format of one of the following:
