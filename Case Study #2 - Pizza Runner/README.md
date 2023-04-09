@@ -138,7 +138,7 @@ Before you start writing your SQL queries however - you might want to investigat
 
 ### [A. Pizza Metrics](./SQL/A.Pizza%20Metrics.sql)
 
-1.  How many pizzas were ordered?
+[1.  How many pizzas were ordered?](./SQL/A.Pizza%20Metrics.sql#L97-L101)
 2.  How many unique customer orders were made?
 3.  How many successful orders were delivered by each runner?
 4.  How many of each type of pizza was delivered?
