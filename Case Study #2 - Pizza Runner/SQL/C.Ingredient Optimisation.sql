@@ -15,9 +15,22 @@ GROUP BY cte.pizza_id
 ;
 
 -- 2.What was the most commonly added extra?
-WITH extra_flat_cte AS (SELECT DISTINCT UNNEST(STRING_TO_ARRAY(extras, ', '))::INT                                AS extra,
+WITH extra_flat_cte AS (SELECT DISTINCT UNNEST(STRING_TO_ARRAY(extras, ', '))::INT                AS extra,
                                         COUNT(order_id)
-                                        OVER (PARTITION BY UNNEST(STRING_TO_ARRAY(extras, ', ')))                 AS count
+                                        OVER (PARTITION BY UNNEST(STRING_TO_ARRAY(extras, ', '))) AS count
+                        FROM customer_orders_temp)
+
+SELECT top.topping_name, count
+FROM extra_flat_cte AS cte
+         INNER JOIN pizza_runner.pizza_toppings AS top
+                    ON cte.extra = top.topping_id
+WHERE count = (SELECT MAX(count) FROM extra_flat_cte)
+;
+
+-- 3.What was the most common exclusion?
+WITH extra_flat_cte AS (SELECT DISTINCT UNNEST(STRING_TO_ARRAY(exclusions, ', '))::INT                AS extra,
+                                        COUNT(order_id)
+                                        OVER (PARTITION BY UNNEST(STRING_TO_ARRAY(exclusions, ', '))) AS count
                         FROM customer_orders_temp)
 
 SELECT top.topping_name, count
