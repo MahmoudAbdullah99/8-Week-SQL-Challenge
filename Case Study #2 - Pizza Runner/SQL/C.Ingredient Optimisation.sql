@@ -119,3 +119,33 @@ FROM customer_orders_temp AS cot
          INNER JOIN pizza_runner.pizza_names AS pn ON cot.pizza_id = pn.pizza_id
 GROUP BY cot.order_id, pn.pizza_name, temp_counter.id
 ;
+
+-- 6.What is the total quantity of each ingredient used in all delivered pizzas sorted by most frequent first?
+WITH main_extra_cte AS (SELECT cot.order_id,
+                               cot.pizza_id,
+                               ROW_NUMBER() OVER (PARTITION BY cot.order_id) AS id,
+                               UNNEST(
+                                       ARRAY_REMOVE(
+                                               STRING_TO_ARRAY(
+                                                       CONCAT(pr.toppings, ', ', cot.extras)
+                                                   , ', ')
+                                           , '')
+                                   )::INT                                    AS ingredients
+                        FROM customer_orders_temp AS cot
+                                 INNER JOIN pizza_runner.pizza_recipes AS pr
+                                            ON cot.pizza_id = pr.pizza_id
+                                 INNER JOIN runner_orders_temp AS rot
+                                     ON cot.order_id = rot.order_id AND rot.cancellation IS NULL)
+
+SELECT top.topping_name,
+       count(*) AS count_ingredient
+FROM main_extra_cte AS cte
+         INNER JOIN pizza_runner.pizza_toppings AS top
+                    ON cte.ingredients = top.topping_id
+WHERE cte.ingredients NOT IN (SELECT UNNEST(STRING_TO_ARRAY(exclusions, ','))::INT
+                              FROM customer_orders_temp AS cot
+                              WHERE cte.order_id = cot.order_id
+                                AND cte.pizza_id = cot.pizza_id)
+GROUP BY top.topping_name
+ORDER BY count_ingredient DESC
+;
