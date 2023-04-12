@@ -39,3 +39,37 @@ FROM extra_flat_cte AS cte
                     ON cte.extra = top.topping_id
 WHERE count = (SELECT MAX(count) FROM extra_flat_cte)
 ;
+
+-- 4.Generate an order item for each record in the customers_orders table in the format of one of the following:
+--     Meat Lovers
+--     Meat Lovers - Exclude Beef
+--     Meat Lovers - Extra Bacon
+--     Meat Lovers - Exclude Cheese, Bacon - Extra Mushroom, Peppers
+WITH ingredients_flat_cte AS (SELECT order_id,
+                                     pizza_id,
+                                     UNNEST(STRING_TO_ARRAY(extras, ', '))     AS extras,
+                                     UNNEST(STRING_TO_ARRAY(exclusions, ', ')) AS exclusions
+                              FROM customer_orders_temp)
+
+SELECT cot.order_id,
+       (CASE
+            WHEN cot.exclusions IS NOT NULL AND cot.extras IS NOT NULL
+                THEN CONCAT(pn.pizza_name, ' - Exclude ', ARRAY_TO_STRING(ARRAY_AGG(DISTINCT top2.topping_name), ', '),
+                            ' - Extra ', ARRAY_TO_STRING(ARRAY_AGG(DISTINCT top1.topping_name), ', '))
+            WHEN cot.exclusions IS NOT NULL
+                THEN CONCAT(pn.pizza_name, ' - Exclude ', ARRAY_TO_STRING(ARRAY_AGG(DISTINCT top2.topping_name), ', '))
+            WHEN cot.extras IS NOT NULL THEN CONCAT(pn.pizza_name, ' - Extra ',
+                                                    ARRAY_TO_STRING(ARRAY_AGG(DISTINCT top1.topping_name), ', '))
+            ELSE pn.pizza_name
+           END) AS full_order
+FROM customer_orders_temp AS cot
+     INNER JOIN pizza_runner.pizza_names AS pn
+                ON cot.pizza_id = pn.pizza_id
+     LEFT JOIN ingredients_flat_cte AS cte
+               ON cot.order_id = cte.order_id
+     LEFT JOIN pizza_runner.pizza_toppings As top1
+               ON cte.extras = top1.topping_id::VARCHAR
+     LEFT JOIN pizza_runner.pizza_toppings As top2
+               ON cte.exclusions = top2.topping_id::VARCHAR
+GROUP BY cot.order_id, pn.pizza_name, cot.exclusions, cot.extras
+;
